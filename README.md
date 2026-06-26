@@ -14,7 +14,7 @@ This is a Claude Code plugin distributed via a GitHub-backed marketplace.
 
 ```bash
 # 1. add this repo as a marketplace
-claude /plugin marketplace add MaxKrupkin/claude-obsidian-bridge
+claude /plugin marketplace add mkrupkin/claude-obsidian-bridge
 
 # 2. install
 claude /plugin install obsidian-bridge@claude-obsidian-bridge
@@ -29,7 +29,7 @@ Or add to `~/.claude/settings.json` manually:
   },
   "extraKnownMarketplaces": {
     "claude-obsidian-bridge": {
-      "source": { "source": "github", "repo": "MaxKrupkin/claude-obsidian-bridge" }
+      "source": { "source": "github", "repo": "mkrupkin/claude-obsidian-bridge" }
     }
   }
 }
