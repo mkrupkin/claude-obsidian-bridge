@@ -10,7 +10,27 @@ Mirror every Claude Code session into your Obsidian vault as readable Markdown �
 
 ## Install
 
-This is a Claude Code plugin distributed via a GitHub-backed marketplace.
+### Lazy install — just paste this into Claude Code
+
+Open any Claude Code session and paste the prompt below. Replace `<VAULT_PATH>` with the absolute path to your Obsidian vault (forward slashes; the vault folder will be created if it doesn't exist):
+
+```
+Install the Claude Code plugin at https://github.com/mkrupkin/claude-obsidian-bridge.
+
+Steps:
+1. Run /plugin marketplace add mkrupkin/claude-obsidian-bridge
+2. Run /plugin install obsidian-bridge@claude-obsidian-bridge
+3. Run /obsidian-init "<VAULT_PATH>"
+4. Confirm the env var CLAUDE_OBSIDIAN_VAULT and the PreCompact + SessionEnd hooks
+   landed in ~/.claude/settings.json, and report how many sessions the initial
+   backfill exported.
+
+If anything fails, stop and tell me the exact error — don't paper over it.
+```
+
+Claude Code will run the marketplace/install commands itself, then `/obsidian-init` will set up the vault structure, env var, hooks, and do an initial backfill. You'll get a confirmation at the end.
+
+### Manual install
 
 ```bash
 # 1. add this repo as a marketplace
@@ -18,6 +38,9 @@ claude /plugin marketplace add mkrupkin/claude-obsidian-bridge
 
 # 2. install
 claude /plugin install obsidian-bridge@claude-obsidian-bridge
+
+# 3. point it at your vault and arm the auto-export hooks
+claude /obsidian-init "/absolute/path/to/your/vault"
 ```
 
 Or add to `~/.claude/settings.json` manually:
