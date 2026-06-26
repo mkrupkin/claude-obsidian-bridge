@@ -1,0 +1,19 @@
+{
+  "name": "obsidian-bridge",
+  "version": "0.1.0",
+  "description": "Mirror Claude Code sessions to your Obsidian vault — auto-export as Markdown, search, and knowledge distillation.",
+  "author": {
+    "name": "Max Krupkin",
+    "email": "mkrupkin@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "obsidian",
+    "sessions",
+    "knowledge-base",
+    "archive",
+    "markdown"
+  ],
+  "homepage": "https://github.com/MaxKrupkin/claude-obsidian-bridge"
+}
