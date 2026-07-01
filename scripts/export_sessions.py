@@ -425,15 +425,22 @@ def export_all(projects_root: Path, force: bool = False, verbose: bool = False) 
     stats = {"projects": 0, "jsonl_total": 0, "exported": 0, "skipped": 0, "failed": 0}
     project_index: dict[str, list[dict]] = defaultdict(list)
 
-    existing_ids: set[str] = set()
+    # session_id -> latest mtime among md files already written for that session.
+    # We compare this against the source jsonl's mtime: if the jsonl was updated
+    # after the md was written, the session is still in progress and needs re-export.
+    existing_mtimes: dict[str, float] = {}
     if not force:
         for md in SESSIONS_DIR.rglob("*.md"):
             try:
                 with md.open("r", encoding="utf-8") as f:
                     head = f.read(2000)
                 m = re.search(r"^session_id:\s*\"?([0-9a-f-]{8,})\"?\s*$", head, re.MULTILINE)
-                if m:
-                    existing_ids.add(m.group(1))
+                if not m:
+                    continue
+                sid = m.group(1)
+                md_mtime = md.stat().st_mtime
+                if md_mtime > existing_mtimes.get(sid, 0.0):
+                    existing_mtimes[sid] = md_mtime
             except OSError:
                 pass
 
@@ -461,10 +468,20 @@ def export_all(projects_root: Path, force: bool = False, verbose: bool = False) 
                 project_name = dir_project_name
             if verbose:
                 print(f"  · {project_name}/{jsonl.name}")
-            if not force and session["session_id"] in existing_ids:
-                stats["skipped"] += 1
-                project_index[project_name].append(session)
-                continue
+            if not force and session["session_id"] in existing_mtimes:
+                # Skip only if the exported markdown is at least as fresh as the jsonl.
+                # If the jsonl has been touched since (session still growing), fall through
+                # to re-export so new messages get captured.
+                try:
+                    jsonl_mtime = jsonl.stat().st_mtime
+                except OSError:
+                    jsonl_mtime = 0.0
+                if jsonl_mtime <= existing_mtimes[session["session_id"]]:
+                    stats["skipped"] += 1
+                    project_index[project_name].append(session)
+                    continue
+                if verbose:
+                    print(f"    (jsonl newer than md — re-exporting)")
             parts = build_markdown_parts(session, project_name)
             dt = parse_iso(session["first_ts"]) or datetime.now(timezone.utc)
             date_str = dt.strftime("%Y-%m-%d")
